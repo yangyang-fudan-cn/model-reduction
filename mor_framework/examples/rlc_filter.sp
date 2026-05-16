@@ -1,0 +1,12 @@
+* RLC Band-pass Filter
+V1 1 0 DC 0 AC 1
+R1 1 2 50
+L1 2 3 1e-7
+C1 3 0 1e-10
+L2 3 4 1e-7
+C2 4 0 1e-10
+R2 4 0 50
+.TRAN 1e-10 5e-7
+.AC DEC 100 1e5 1e10
+.PRINT V(4)
+.END

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /home/ocean/software/model_reduction && git remote -v)",
+      "Bash(cd /home/ocean/software/model_reduction && git branch)",
+      "Bash(cd /home/ocean/software/model_reduction && git status && git branch -a)",
+      "Bash(gh auth status 2>&1)",
+      "Bash(cd /home/ocean/software/model_reduction && git remote add origin https://github.com/yangyang-fudan-cn/model-reduction.git)",
+      "Bash(cd /home/ocean/software/model_reduction && git ls-remote origin HEAD 2>&1)",
+      "Bash(cd /home/ocean/software/model_reduction && git add .qoder/ main.py mor_framework/ rc_rcl_model_reduction_algorithms.md && git commit -m \"$\\(cat <<'EOF'\nInitial commit: model reduction framework\nEOF\n\\)\")"
+    ]
+  }
+}

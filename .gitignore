@@ -1,0 +1,26 @@
+# Qoder CLI configuration
+.qoder/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.so
+
+# Generated plots
+mor_*.png
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS junk
+.DS_Store
+Thumbs.db
