@@ -6,10 +6,11 @@ A Python framework for reducing the order of RC and RLC circuit models described
 
 - **SPICE netlist parser** — reads standard SPICE netlists with R, C, L, V, I elements, PULSE sources, and `.TRAN`/`.AC`/`.PRINT` control directives.
 - **Modified Nodal Analysis (MNA)** — builds sparse descriptor system matrices `(G + sC)x = Bu`, `y = Lᵀx`.
-- **Three MOR algorithms:**
+- **Four MOR algorithms:**
   - **PRIMA** — Passive Reduced-order Interconnect Macromodeling Algorithm (block Krylov subspace via Arnoldi, passivity-preserving).
   - **Balanced Truncation (BT)** — truncates low-energy states via Hankel singular values; optimal error bound.
   - **Proper Orthogonal Decomposition (POD)** — data-driven SVD-based reduction from transient simulation snapshots.
+  - **TICER** — Time-Constant Equilibration Reduction for RC circuits (Sheehan, ICCAD 1999). Eliminates internal nodes with small time constants via star-mesh transformation and capacitance redistribution. RC-specific, port-preserving, produces realizable reduced networks.
 - **Transient simulation** — Backward Euler / Trapezoidal time-domain integration.
 - **AC analysis** — frequency-domain sweep with decade/octave/linear spacing.
 - **Full vs. reduced comparison** — project reduced state back to full space and compute relative error; reports speedup.
@@ -41,9 +42,10 @@ python main.py <netlist.sp> [options]
 
 | Flag | Description |
 |------|-------------|
-| `--reduce`, `-r` | MOR algorithm: `prima`, `bt`, or `pod` |
-| `--order`, `-o` | Target reduced order (default: `n_state // 10`) |
+| `--reduce`, `-r` | MOR algorithm: `prima`, `bt`, `pod`, or `ticer` |
+| `--order`, `-o` | Target reduced order (default: `n_state // 10`; ignored by TICER) |
 | `--expansion-point`, `-s0` | Expansion point for PRIMA (default: `0`) |
+| `--threshold`, `-tau` | Time-constant threshold for TICER in seconds (default: `1e-12`) |
 | `--simulate` | Run transient simulation |
 | `--ac` | Run AC frequency sweep |
 | `--tstep` | Transient time step (overrides netlist) |
@@ -74,6 +76,12 @@ Reduce using POD from transient snapshots:
 python main.py mor_framework/examples/clock_tree.sp --reduce pod --order 20 --simulate --plot
 ```
 
+Reduce an RC clock tree using TICER with a 5ps time-constant threshold:
+
+```bash
+python main.py mor_framework/examples/clock_tree.sp --reduce ticer --threshold 5e-12 --simulate --compare
+```
+
 ## Project Structure
 
 ```
@@ -87,7 +95,8 @@ python main.py mor_framework/examples/clock_tree.sp --reduce pod --order 20 --si
 │   │   ├── base.py                   # Abstract MOR base class & ReducedModel dataclass
 │   │   ├── prima.py                  # PRIMA: block Krylov subspace via Arnoldi
 │   │   ├── balanced_truncation.py    # Balanced Truncation via Lyapunov equations
-│   │   └── pod.py                    # POD: SVD-based reduction from snapshots
+│   │   ├── pod.py                    # POD: SVD-based reduction from snapshots
+│   │   └── ticer.py                  # TICER: RC-specific time-constant equilibration reduction
 │   ├── simulation/
 │   │   ├── transient.py             # Time-domain simulation (BE / TRAP)
 │   │   └── ac.py                     # Frequency-domain AC analysis
@@ -102,6 +111,7 @@ python main.py mor_framework/examples/clock_tree.sp --reduce pod --order 20 --si
 ## References
 
 - A. Odabasioglu, M. Celik, L. T. Pileggi, "PRIMA: passive reduced-order interconnect macromodeling algorithm," *IEEE TCAD*, 1998.
+- B. N. Sheehan, "TICER: Realizable reduction of extracted RC circuits," *IEEE/ACM ICCAD*, 1999.
 - B. Moore, "Principal component analysis in linear systems: Controllability, observability, and model reduction," *IEEE TAC*, 1981.
 - S. Lall, "Structure-preserving model reduction," *Mechanical Systems and Signal Processing*, 2003.
 

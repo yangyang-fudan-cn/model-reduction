@@ -27,6 +27,7 @@ from mor_framework.core.mna import build_mna
 from mor_framework.mor.prima import PRIMA
 from mor_framework.mor.balanced_truncation import BalancedTruncation
 from mor_framework.mor.pod import POD
+from mor_framework.mor.ticer import TICER
 from mor_framework.simulation.transient import simulate_transient
 from mor_framework.simulation.ac import ac_analysis
 
@@ -34,6 +35,7 @@ MOR_REGISTRY = {
     "prima": PRIMA,
     "bt": BalancedTruncation,
     "pod": POD,
+    "ticer": TICER,
 }
 
 
@@ -69,6 +71,8 @@ def main():
                         help="Target reduced order")
     parser.add_argument("--expansion-point", "-s0", type=float, default=0.0,
                         help="Expansion point for PRIMA (default: 0)")
+    parser.add_argument("--threshold", "-tau", type=float, default=1e-12,
+                        help="Time-constant threshold for TICER in seconds (default: 1e-12)")
     parser.add_argument("--simulate", action="store_true",
                         help="Run transient simulation")
     parser.add_argument("--ac", action="store_true",
@@ -141,6 +145,9 @@ def main():
         if args.reduce == "prima":
             algo_kwargs["expansion_point"] = args.expansion_point
             algo = algo_cls(expansion_point=args.expansion_point)
+        elif args.reduce == "ticer":
+            algo_kwargs["threshold"] = args.threshold
+            algo = algo_cls(threshold=args.threshold)
         else:
             algo = algo_cls()
 
